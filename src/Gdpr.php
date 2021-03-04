@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Pollen\CookieLaw;
+namespace Pollen\Gdpr;
 
 use RuntimeException;
-use Pollen\CookieLaw\Adapters\AdapterInterface;
-use Pollen\CookieLaw\Contracts\CookieLawContract;
-use Pollen\CookieLaw\Partial\PrivacyLinkPartial;
+use Pollen\Gdpr\Adapters\AdapterInterface;
+use Pollen\Gdpr\Contracts\CookieLawContract;
+use Pollen\Gdpr\Partial\PrivacyLinkPartial;
 use Psr\Container\ContainerInterface as Container;
 use tiFy\Contracts\Filesystem\LocalFilesystem;
 use tiFy\Contracts\View\Engine as ViewEngine;
@@ -21,7 +21,7 @@ use tiFy\Support\Proxy\Router;
 use tiFy\Support\Proxy\Storage;
 use tiFy\Support\Proxy\View;
 
-class CookieLaw implements CookieLawContract
+class Gdpr implements GdprInterface
 {
     use BootableTrait;
     use ContainerAwareTrait;
@@ -95,7 +95,7 @@ class CookieLaw implements CookieLawContract
     /**
      * @inheritDoc
      */
-    public static function instance(): CookieLawContract
+    public static function instance(): GdprInterface
     {
         if (self::$instance instanceof self) {
             return self::$instance;
@@ -114,7 +114,7 @@ class CookieLaw implements CookieLawContract
     /**
      * @inheritDoc
      */
-    public function boot(): CookieLawContract
+    public function boot(): GdprInterface
     {
         if (!$this->isBooted()) {
             events()->trigger('cookie-law.booting', [$this]);
@@ -186,7 +186,7 @@ class CookieLaw implements CookieLawContract
     /**
      * @inheritDoc
      */
-    public function parseConfig(): CookieLawContract
+    public function parseConfig(): GdprInterface
     {
         $this->config(
             [
@@ -254,7 +254,7 @@ class CookieLaw implements CookieLawContract
     /**
      * @inheritDoc
      */
-    public function setAdapter(AdapterInterface $adapter): CookieLawContract
+    public function setAdapter(AdapterInterface $adapter): GdprInterface
     {
         $this->adapter = $adapter;
 
@@ -264,7 +264,7 @@ class CookieLaw implements CookieLawContract
     /**
      * @inheritDoc
      */
-    public function setConfig(array $attrs): CookieLawContract
+    public function setConfig(array $attrs): GdprInterface
     {
         $this->config($attrs);
 

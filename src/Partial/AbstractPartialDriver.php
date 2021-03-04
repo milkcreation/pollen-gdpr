@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Pollen\CookieLaw\Partial;
+namespace Pollen\Gdpr\Partial;
 
-use Pollen\CookieLaw\Contracts\CookieLawContract;
+use Pollen\Gdpr\GdprInterface;
+use Pollen\Gdpr\GdprProxy;
 use tiFy\Partial\Contracts\PartialContract;
 use tiFy\Partial\PartialDriver;
-use Pollen\CookieLaw\CookieLawAwareTrait;
 
 abstract class AbstractPartialDriver extends PartialDriver
 {
-    use CookieLawAwareTrait;
+    use GdprProxy;
 
-    public function __construct(CookieLawContract $cookieLawManager, PartialContract $partialManager)
+    public function __construct(GdprInterface $gdpr, PartialContract $partialManager)
     {
-        $this->setCookieLaw($cookieLawManager);
+        $this->setGdpr($gdpr);
 
         parent::__construct($partialManager);
     }
@@ -28,8 +28,8 @@ abstract class AbstractPartialDriver extends PartialDriver
         if (is_null($this->viewEngine)) {
             $viewEngine = parent::view();
             $viewEngine
-                ->setParams(['cookie-law' => $this->cookieLaw()])
-                ->setFactory(CookieLawPartialView::class);
+                ->setParams(['gdpr' => $this->gdpr()])
+                ->setFactory(GdprPartialView::class);
         }
 
         return parent::view($view, $data);
@@ -40,6 +40,6 @@ abstract class AbstractPartialDriver extends PartialDriver
      */
     public function viewDirectory(): string
     {
-        return $this->cookieLaw()->resources("views/partial/{$this->getAlias()}");
+        return $this->gdpr()->resources("views/partial/{$this->getAlias()}");
     }
 }

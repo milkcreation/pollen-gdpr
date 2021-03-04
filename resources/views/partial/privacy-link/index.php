@@ -1,5 +1,5 @@
 <?php
 /**
- * @var Pollen\CookieLaw\CookieLawView $this
+ * @var tiFy\Partial\PartialViewInterface $this
  */
 ?>

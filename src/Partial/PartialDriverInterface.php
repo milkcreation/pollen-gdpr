@@ -2,13 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Pollen\CookieLaw\Partial;
+namespace Pollen\Gdpr\Partial;
 
+use Pollen\Gdpr\GdprProxyInterface;
 use tiFy\Partial\PartialDriverInterface as BasePartialDriverInterface;
 
-/**
- * @mixin \Pollen\CookieLaw\CookieLawAwareTrait
- */
-interface PartialDriverInterface extends BasePartialDriverInterface
+interface PartialDriverInterface extends BasePartialDriverInterface, GdprProxyInterface
 {
 }

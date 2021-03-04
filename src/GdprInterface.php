@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Pollen\CookieLaw\Contracts;
+namespace Pollen\Gdpr;
 
 use RuntimeException;
-use Pollen\CookieLaw\Adapters\AdapterInterface;
+use Pollen\Gdpr\Adapters\AdapterInterface;
 use tiFy\Contracts\View\Engine as ViewEngine;
 use tiFy\Contracts\Filesystem\LocalFilesystem;
 use tiFy\Contracts\Support\ParamsBag;
@@ -16,7 +16,7 @@ use tiFy\Partial\Drivers\ModalDriverInterface;
  * @mixin \tiFy\Support\Concerns\ContainerAwareTrait
  * @mixin \tiFy\Support\Concerns\PartialManagerAwareTrait
  */
-interface CookieLawContract
+interface GdprInterface
 {
     /**
      * Récupération de l'instance de l'extension.
@@ -25,7 +25,7 @@ interface CookieLawContract
      *
      * @throws RuntimeException
      */
-    public static function instance(): CookieLawContract;
+    public static function instance(): GdprInterface;
 
     /**
      * Résolution de sortie de la classe en tant que chaîne de caractère.
@@ -39,7 +39,7 @@ interface CookieLawContract
      *
      * @return static
      */
-    public function boot(): CookieLawContract;
+    public function boot(): GdprInterface;
 
     /**
      * Récupération de paramètre|Définition de paramètres|Instance du gestionnaire de paramètre.
@@ -79,7 +79,7 @@ interface CookieLawContract
      *
      * @return static
      */
-    public function parseConfig(): CookieLawContract;
+    public function parseConfig(): GdprInterface;
 
     /**
      * Chemin absolu vers une ressources (fichier|répertoire).
@@ -97,7 +97,7 @@ interface CookieLawContract
      *
      * @return static
      */
-    public function setAdapter(AdapterInterface $adapter): CookieLawContract;
+    public function setAdapter(AdapterInterface $adapter): GdprInterface;
 
     /**
      * Définition des paramètres de configuration.
@@ -106,7 +106,7 @@ interface CookieLawContract
      *
      * @return static
      */
-    public function setConfig(array $attrs): CookieLawContract;
+    public function setConfig(array $attrs): GdprInterface;
 
     /**
      * Affichage.
