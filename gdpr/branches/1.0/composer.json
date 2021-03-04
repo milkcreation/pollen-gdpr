@@ -1,0 +1,54 @@
+{
+  "name": "pollen-solutions/cookie-law",
+  "description": "Cookie Law Component.",
+  "homepage": "https://www.presstify.com/pollen-solutions/cookie-law/",
+  "keywords": [
+    "presstify",
+    "plugins",
+    "wordpress",
+    "cookie",
+    "rgpd",
+    "gprd"
+  ],
+  "time": "2020-01-15",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Jordy Manner",
+      "email": "jordy@presstify.com",
+      "role": "Developper"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://composer.presstify.com/pollen-solutions/"
+    }
+  ],
+  "require": {
+    "composer/installers": "~1.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.0"
+  },
+  "autoload": {
+    "files": [
+      "src/helpers.php"
+    ],
+    "psr-4": {
+      "Pollen\\CookieLaw\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Pollen\\CookieLaw\\Test\\": "tests"
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,  
+  "config": {
+    "optimize-autoloader": true,
+    "preferred-install": "dist",
+    "sort-packages": true
+  }
+}
