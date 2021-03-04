@@ -2,16 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Pollen\CookieLaw\Adapters;
+namespace Pollen\Gdpr\Adapters;
 
-use Pollen\CookieLaw\Contracts\CookieLawContract;
+use Pollen\Gdpr\GdprInterface;
+use Pollen\Gdpr\GdprProxyInterface;
 
-interface AdapterInterface
+interface AdapterInterface extends GdprProxyInterface
 {
     /**
      * Traitement des attributs de configuration de rendu.
      *
-     * @return CookieLawContract
+     * @return GdprInterface
      */
-    public function parseConfig(): CookieLawContract;
+    public function parseConfig(): GdprInterface;
 }

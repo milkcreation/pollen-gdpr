@@ -1,3 +1,3 @@
 // Dépendances
-import 'presstify-framework/partial/cookie-notice/js/scripts';
-import 'presstify-framework/partial/modal/js/scripts';
+import 'pollen-solutions/partial/resources/assets/src/js/cookie-notice';
+import 'pollen-solutions/partial/resources/assets/src/js/modal';

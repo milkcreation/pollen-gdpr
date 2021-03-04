@@ -1,6 +1,6 @@
 <?php
 /**
- * @var Pollen\CookieLaw\CookieLawView $this
+ * @var Pollen\Gdpr\GdprView $this
  */
 ?>
 <h2>Qui sommes-nous&nbsp;?</h2>

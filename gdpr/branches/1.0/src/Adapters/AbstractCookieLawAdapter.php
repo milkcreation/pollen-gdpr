@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Pollen\CookieLaw\Adapters;
+namespace Pollen\Gdpr\Adapters;
 
-use Pollen\CookieLaw\CookieLawAwareTrait;
-use Pollen\CookieLaw\Contracts\CookieLawContract;
+use Pollen\Gdpr\GdprInterface;
+use Pollen\Gdpr\GdprProxy;
 
 abstract class AbstractCookieLawAdapter implements AdapterInterface
 {
-    use CookieLawAwareTrait;
+    use GdprProxy;
 
     /**
-     * @param CookieLawContract $cookieLawManager
+     * @param GdprInterface $gdpr
      */
-    public function __construct(CookieLawContract $cookieLawManager)
+    public function __construct(GdprInterface $gdpr)
     {
-        $this->setCookieLaw($cookieLawManager);
+        $this->setGdpr($gdpr);
     }
 }
