@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pollen\CookieLaw;
+namespace Pollen\Gdpr;
 
 use BadMethodCallException;
 use Exception;
@@ -20,7 +20,7 @@ use tiFy\View\Factory\PlatesFactory;
  * @method ModalDriverInterface modal()
  * @method false|QueryPost privacyPolicy()
  */
-class CookieLawView extends PlatesFactory
+class GdprView extends PlatesFactory
 {
     /**
      * Liste des méthodes héritées.
@@ -44,9 +44,9 @@ class CookieLawView extends PlatesFactory
     {
         if (in_array($name, $this->mixins)) {
             try {
-                $cookieLaw = $this->engine->params('cookie-law');
+                $gdpr = $this->engine->params('gdpr');
 
-                return $cookieLaw->{$name}(...$arguments);
+                return $gdpr->{$name}(...$arguments);
             } catch (Exception $e) {
                 throw new BadMethodCallException(
                     sprintf(

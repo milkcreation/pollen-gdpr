@@ -2,16 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Pollen\CookieLaw;
+namespace Pollen\Gdpr;
 
-use Pollen\CookieLaw\Adapters\WordpressAdapter;
-use Pollen\CookieLaw\Contracts\CookieLawContract;
-use Pollen\CookieLaw\Partial\PrivacyLinkPartial;
+use Pollen\Gdpr\Adapters\WordpressAdapter;
+use Pollen\Gdpr\Partial\PrivacyLinkPartial;
 use tiFy\Container\ServiceProvider;
 use tiFy\Partial\Contracts\PartialContract;
 use tiFy\Support\Proxy\View;
 
-class CookieLawServiceProvider extends ServiceProvider
+class GdprServiceProvider extends ServiceProvider
 {
     /**
      * Liste des noms de qualification des services fournis.
@@ -19,10 +18,10 @@ class CookieLawServiceProvider extends ServiceProvider
      * @var string[]
      */
     protected $provides = [
-        CookieLawContract::class,
+        GdprInterface::class,
         PrivacyLinkPartial::class,
         WordpressAdapter::class,
-        'cookie-law.view-engine',
+        'gdpr.view-engine',
     ];
 
     /**
@@ -33,10 +32,10 @@ class CookieLawServiceProvider extends ServiceProvider
         events()->listen(
             'wp.booted',
             function () {
-                /** @var CookieLawContract $cookieLaw */
-                $cookieLaw = $this->getContainer()->get(CookieLawContract::class);
+                /** @var GdprInterface $gdpr */
+                $gdpr = $this->getContainer()->get(GdprInterface::class);
 
-                $cookieLaw->setAdapter($cookieLaw->containerGet(WordpressAdapter::class))->boot();
+                $gdpr->setAdapter($gdpr->containerGet(WordpressAdapter::class))->boot();
             }
         );
     }
@@ -47,9 +46,9 @@ class CookieLawServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->getContainer()->share(
-            CookieLawContract::class,
+            GdprInterface::class,
             function () {
-                return new CookieLaw(config('cookie-law', []), $this->getContainer());
+                return new Gdpr(config('gdpr', []), $this->getContainer());
             }
         );
 
@@ -68,7 +67,7 @@ class CookieLawServiceProvider extends ServiceProvider
         $this->getContainer()->share(
             WordpressAdapter::class,
             function () {
-                return new WordpressAdapter($this->getContainer()->get(CookieLawContract::class));
+                return new WordpressAdapter($this->getContainer()->get(GdprInterface::class));
             }
         );
     }
@@ -84,7 +83,7 @@ class CookieLawServiceProvider extends ServiceProvider
             PrivacyLinkPartial::class,
             function () {
                 return new PrivacyLinkPartial(
-                    $this->getContainer()->get(CookieLawContract::class),
+                    $this->getContainer()->get(GdprInterface::class),
                     $this->getContainer()->get(PartialContract::class)
                 );
             }
@@ -99,19 +98,19 @@ class CookieLawServiceProvider extends ServiceProvider
     public function registerViewEngine(): void
     {
         $this->getContainer()->share(
-            'cookie-law.view-engine',
+            'gdpr.view-engine',
             function () {
-                /** @var CookieLawContract $cookieLaw */
-                $cookieLaw = $this->getContainer()->get(CookieLawContract::class);
+                /** @var GdprInterface $gdpr */
+                $gdpr = $this->getContainer()->get(GdprInterface::class);
 
                 return View::getPlatesEngine(
                     array_merge(
                         [
-                            'directory'  => $cookieLaw->resources('views'),
-                            'factory'    => CookieLawView::class,
-                            'cookie-law' => $cookieLaw,
+                            'directory'  => $gdpr->resources('views'),
+                            'factory'    => GdprView::class,
+                            'gdpr' => $gdpr,
                         ],
-                        $cookieLaw->config('viewer', [])
+                        $gdpr->config('viewer', [])
                     )
                 );
             }
