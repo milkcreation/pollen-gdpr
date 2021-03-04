@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Pollen\CookieLaw\Adapters;
+namespace Pollen\Gdpr\Adapters;
 
-use Pollen\CookieLaw\Contracts\CookieLawContract;
+use Pollen\Gdpr\GdprInterface;
 use tiFy\Wordpress\Proxy\PageHook;
 
 class WordpressAdapter extends AbstractCookieLawAdapter
@@ -12,9 +12,9 @@ class WordpressAdapter extends AbstractCookieLawAdapter
     /**
      * @inheritDoc
      */
-    public function parseConfig(): CookieLawContract
+    public function parseConfig(): GdprInterface
     {
-        $conf = $this->cookieLaw()->config();
+        $conf = $this->gdpr()->config();
 
         if (!$conf->has('page-hook')) {
             $conf->set('page-hook', true);
@@ -53,10 +53,10 @@ class WordpressAdapter extends AbstractCookieLawAdapter
 
         if ($conf->get('in_footer')) {
             add_action('wp_footer', function () {
-                echo $this->cookieLaw()->render();
+                echo $this->gdpr()->render();
             }, 999999);
         }
 
-        return $this->cookieLaw();
+        return $this->gdpr();
     }
 }

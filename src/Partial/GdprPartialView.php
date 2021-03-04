@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pollen\CookieLaw\Partial;
+namespace Pollen\Gdpr\Partial;
 
 use BadMethodCallException;
 use Exception;
@@ -20,7 +20,7 @@ use tiFy\Wordpress\Contracts\Query\QueryPost;
  * @method ModalDriverInterface modal()
  * @method false|QueryPost privacyPolicy()
  */
-class CookieLawPartialView extends PartialView
+class GdprPartialView extends PartialView
 {
     /**
      * Liste des méthodes héritées.

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pollen\CookieLaw\Partial;
+namespace Pollen\Gdpr\Partial;
 
 class PrivacyLinkPartial extends AbstractPartialDriver
 {

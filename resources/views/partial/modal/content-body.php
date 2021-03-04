@@ -1,6 +1,6 @@
 <?php
 /**
- * @var Pollen\CookieLaw\CookieLawView $this
+ * @var tiFy\Partial\PartialViewInterface $this
  */
 ?>
 <div style="padding:20px;text-align:center;">

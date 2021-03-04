@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Pollen\CookieLaw\Test;
+namespace Pollen\Gdpr\Test;
 
 use PHPUnit\Framework\TestCase;
 
-class CookieLawTest extends TestCase
+class GdprTest extends TestCase
 {
 }

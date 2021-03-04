@@ -1,6 +1,6 @@
 <?php
 /**
- * @var Pollen\CookieLaw\CookieLawView $this
+ * @var Pollen\Gdpr\GdprView $this
  */
 ?>
 <?php $this->insert('partial/cookie-notice/privacy-policy', $this->all()); ?>
