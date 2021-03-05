@@ -4,38 +4,33 @@ declare(strict_types=1);
 
 namespace Pollen\Gdpr;
 
+use Pollen\Support\Filesystem;
 use RuntimeException;
-use Pollen\Gdpr\Adapters\AdapterInterface;
-use Pollen\Gdpr\Contracts\CookieLawContract;
+use Pollen\Gdpr\Partial\CookieBannerPartial;
+use Pollen\Gdpr\Partial\PolicyModalPartial;
 use Pollen\Gdpr\Partial\PrivacyLinkPartial;
+use Pollen\Support\Concerns\BootableTrait;
+use Pollen\Support\Concerns\ConfigBagAwareTrait;
+use Pollen\Support\Proxy\ContainerProxy;
+use Pollen\Support\Proxy\PartialProxy;
 use Psr\Container\ContainerInterface as Container;
-use tiFy\Contracts\Filesystem\LocalFilesystem;
-use tiFy\Contracts\View\Engine as ViewEngine;
-use tiFy\Partial\Drivers\ModalDriverInterface;
-use tiFy\Support\Concerns\BootableTrait;
-use tiFy\Support\Concerns\ContainerAwareTrait;
-use tiFy\Support\Concerns\PartialManagerAwareTrait;
-use tiFy\Support\ParamsBag;
-use tiFy\Support\Proxy\Request;
-use tiFy\Support\Proxy\Router;
-use tiFy\Support\Proxy\Storage;
-use tiFy\Support\Proxy\View;
 
 class Gdpr implements GdprInterface
 {
     use BootableTrait;
-    use ContainerAwareTrait;
-    use PartialManagerAwareTrait;
+    use ConfigBagAwareTrait;
+    use ContainerProxy;
+    use PartialProxy;
 
     /**
-     * Instance de la classe.
+     * Instance principale.
      * @var static|null
      */
     private static $instance;
 
     /**
      * Instance de l'adapteur associé.
-     * @var AdapterInterface
+     * @var GdprAdapterInterface|null
      */
     private $adapter;
 
@@ -46,28 +41,10 @@ class Gdpr implements GdprInterface
     private $defaultProviders = [];
 
     /**
-     * Instance du gestionnaire des ressources
-     * @var LocalFilesystem|null
+     * Chemin vers le répertoire des ressources.
+     * @var string|null
      */
-    private $resources;
-
-    /**
-     * Instance du gestionnaire de configuration.
-     * @var ParamsBag
-     */
-    protected $configBag;
-
-    /**
-     * Instance de la fenêtre modal d'affichage de la politique de confidentialité.
-     * @var ModalDriverInterface|false|null
-     */
-    protected $modal;
-
-    /**
-     * Moteur des gabarits d'affichage.
-     * @var ViewEngine|null
-     */
-    protected $viewEngine;
+    protected $resourcesBaseDir;
 
     /**
      * Url de requête HTTP XHR.
@@ -87,28 +64,26 @@ class Gdpr implements GdprInterface
             $this->setContainer($container);
         }
 
+        if ($this->config('boot_enabled', true)) {
+            $this->boot();
+        }
+
         if (!self::$instance instanceof static) {
             self::$instance = $this;
         }
     }
 
     /**
-     * @inheritDoc
+     * Récupération de l'instance principale.
+     *
+     * @return static
      */
-    public static function instance(): GdprInterface
+    public static function getInstance(): GdprInterface
     {
         if (self::$instance instanceof self) {
             return self::$instance;
         }
-        throw new RuntimeException(sprintf('Unavailable %s instance', __CLASS__));
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function __toString(): string
-    {
-        return $this->render();
+        throw new RuntimeException(sprintf('Unavailable [%s] instance', __CLASS__));
     }
 
     /**
@@ -117,21 +92,30 @@ class Gdpr implements GdprInterface
     public function boot(): GdprInterface
     {
         if (!$this->isBooted()) {
-            events()->trigger('cookie-law.booting', [$this]);
+            //events()->trigger('cookie-law.booting', [$this]);
 
-            $this->xhrModalUrl = Router::xhr(md5('CookieLaw'), [$this, 'xhrModal'])->getUrl();
+            $this->partial()->register(
+                'cookie-banner',
+                $this->containerHas(CookieBannerPartial::class)
+                    ? CookieBannerPartial::class : new CookieBannerPartial($this, $this->partial())
+            );
 
-            $this->partialManager()->register(
+            $this->partial()->register(
+                'policy-modal',
+                $this->containerHas(PolicyModalPartial::class)
+                    ? PolicyModalPartial::class : new PolicyModalPartial($this, $this->partial())
+            );
+
+            $this->partial()->register(
                 'privacy-link',
                 $this->containerHas(PrivacyLinkPartial::class)
-                    ? PrivacyLinkPartial::class : new PrivacyLinkPartial($this, $this->partialManager())
+                    ? PrivacyLinkPartial::class : new PrivacyLinkPartial($this, $this->partial())
             );
 
             $this->parseConfig();
 
             $this->setBooted();
-
-            events()->trigger('cookie-law.booted', [$this]);
+            //events()->trigger('cookie-law.booted', [$this]);
         }
 
         return $this;
@@ -140,25 +124,7 @@ class Gdpr implements GdprInterface
     /**
      * @inheritDoc
      */
-    public function config($key = null, $default = null)
-    {
-        if (!isset($this->configBag) || is_null($this->configBag)) {
-            $this->configBag = new ParamsBag();
-        }
-
-        if (is_string($key)) {
-            return $this->configBag->get($key, $default);
-        } elseif (is_array($key)) {
-            return $this->configBag->set($key);
-        } else {
-            return $this->configBag;
-        }
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getAdapter(): ?AdapterInterface
+    public function getAdapter(): ?GdprAdapterInterface
     {
         return $this->adapter;
     }
@@ -166,29 +132,9 @@ class Gdpr implements GdprInterface
     /**
      * @inheritDoc
      */
-    public function getProvider(string $name)
+    public function parseConfig(): void
     {
-        return $this->config("providers.{$name}", $this->defaultProviders[$name] ?? null);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function modal(): ?ModalDriverInterface
-    {
-        if (is_null($this->modal) && ($this->config('modal') !== false)) {
-            $this->modal = $this->partialManager()->get('modal', $this->config('modal', []));
-        }
-
-        return $this->modal;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function parseConfig(): GdprInterface
-    {
-        $this->config(
+        /*$this->config(
             [
                 'id'             => 'CookieLaw',
                 'privacy_policy' => [
@@ -196,7 +142,7 @@ class Gdpr implements GdprInterface
                     'title'   => $this->view('partial/cookie-notice/default-title'),
                 ],
             ]
-        );
+        );*/
 
         $modal = $this->config('modal', true);
         if ($this->config('modal') !== false) {
@@ -218,7 +164,7 @@ class Gdpr implements GdprInterface
                 );
             }
 
-            foreach (['header', 'body', 'footer'] as $part) {
+            /*foreach (['header', 'body', 'footer'] as $part) {
                 if (!$this->config()->has("modal.content.{$part}")) {
                     $this->config(
                         [
@@ -229,32 +175,42 @@ class Gdpr implements GdprInterface
                         ]
                     );
                 }
-            }
+            }*/
 
             if (!$this->config()->has('modal.viewer.override_dir')) {
                 $this->config(['modal.viewer.override_dir' => $this->resources('views/partial/modal')]);
             }
         }
 
-        return $this->getAdapter() ? $this->getAdapter()->parseConfig() : $this;
+        if ($adapter = $this->getAdapter()) {
+            $adapter->parseConfig();
+        }
     }
 
     /**
      * @inheritDoc
      */
-    public function resources(?string $path = null)
+    public function resources(?string $path = null): string
     {
-        if (!isset($this->resources) || is_null($this->resources)) {
-            $this->resources = Storage::local(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'resources');
+        if ($this->resourcesBaseDir === null) {
+            $this->resourcesBaseDir = Filesystem::normalizePath(
+                realpath(
+                    dirname(__DIR__) . '/resources/'
+                )
+            );
+
+            if (!file_exists($this->resourcesBaseDir)) {
+                throw new RuntimeException('Gdpr ressources directory unreachable');
+            }
         }
 
-        return is_null($path) ? $this->resources : $this->resources->path($path);
+        return is_null($path) ? $this->resourcesBaseDir : $this->resourcesBaseDir . Filesystem::normalizePath($path);
     }
 
     /**
      * @inheritDoc
      */
-    public function setAdapter(AdapterInterface $adapter): GdprInterface
+    public function setAdapter(GdprAdapterInterface $adapter): GdprInterface
     {
         $this->adapter = $adapter;
 
@@ -264,59 +220,10 @@ class Gdpr implements GdprInterface
     /**
      * @inheritDoc
      */
-    public function setConfig(array $attrs): GdprInterface
+    public function setResourcesBaseDir(string $resourceBaseDir): GdprInterface
     {
-        $this->config($attrs);
+        $this->resourcesBaseDir = Filesystem::normalizePath($resourceBaseDir);
 
         return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function render(): string
-    {
-        return $this->view('partial/cookie-notice/index', $this->config()->all());
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function view(?string $name = null, array $data = [])
-    {
-        if (is_null($this->viewEngine)) {
-            $this->viewEngine = $this->containerHas('cookie-law.view-engine')
-                ? $this->containerGet('cookie-law.view-engine') : View::getPlatesEngine();
-        }
-
-        if (func_num_args() === 0) {
-            return $this->viewEngine;
-        }
-
-        return $this->viewEngine->render($name, $data);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function xhrModal(): array
-    {
-        $modal = $this->parseConfig()->modal();
-
-        $viewer = Request::input('viewer', []);
-        foreach ($viewer as $key => $value) {
-            $modal->view()->params([$key => $value]);
-        }
-
-        return [
-            'success' => true,
-            'data'    => $modal->view(
-                'ajax-content',
-                [
-                    'title'   => $this->config('privacy_policy.title'),
-                    'content' => $this->config('privacy_policy.content'),
-                ]
-            ),
-        ];
     }
 }

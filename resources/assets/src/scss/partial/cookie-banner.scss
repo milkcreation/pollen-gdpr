@@ -1,0 +1,114 @@
+// Variables
+@import "./cookie-banner/variables";
+
+// Dépendances
+@import "./cookie-banner/theme-dark";
+@import "./cookie-banner/theme-light";
+
+// Personnalisation
+.CookieBanner {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 1100;
+  padding: 10px 30px 10px 10px;
+  text-align: center;
+  background-color: $cookie-banner-background-color;
+  color: $cookie-banner-color;
+  transform: translateY(100%);
+  transition: transform .5s ease-in-out;
+
+  &.visible {
+    transform: translateY(0);
+  }
+}
+
+
+.CookieBanner-noticeText {
+  margin-bottom: 10px;
+}
+
+.CookieBanner-noticeButtons {
+  margin: 0 -5px;
+}
+
+.CookieBanner-button {
+  display: inline-block;
+  margin: 0 2px 5px;
+  padding: 0.6em 1.2em;
+  line-height: 1;
+  white-space: nowrap;
+  transition: color 300ms ease-in-out, border-color 300ms ease-in-out;
+
+  &,
+  &:visited {
+    color: $cookie-banner-color;
+    border: solid 1px $cookie-banner-color;
+  }
+
+  &:hover,
+  &:active,
+  &:focus {
+    color: $cookie-banner-hover-color;
+    border-color: $cookie-banner-hover-color;
+  }
+}
+
+.CookieBanner-close {
+  display: block;
+  border:none;
+  background-color: transparent;
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+
+  &::before {
+    content: "\2716";
+    vertical-align: middle;
+  }
+}
+
+.CookieBanner-noticeClose {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  transition: color 300ms ease-in-out;
+
+  &,
+  &:active,
+  &:visited {
+    color: $cookie-banner-color;
+  }
+
+  &:hover,
+  &:focus {
+    color: $cookie-banner-hover-color;
+  }
+}
+
+.CookieBanner-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 100%;
+  z-index: 1099;
+  opacity: $cookie-banner-backdrop-opacity;
+  background-color: $cookie-banner-backdrop-background-color;
+  transition: all 0.5s;
+}
+
+body.modal-open {
+  .CookieBanner-notice {
+    opacity: 0;
+    max-height: 100%;
+  }
+
+  .CookieBanner-backdrop {
+    opacity: 0;
+    max-height: 100%;
+  }
+}

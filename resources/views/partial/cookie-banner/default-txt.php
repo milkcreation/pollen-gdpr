@@ -1,6 +1,6 @@
 <?php
 /**
- * @var Pollen\Gdpr\GdprView $this
+ * @var Pollen\Partial\PartialViewLoaderInterface $this
  */
 ?>
 <h2>Qui sommes-nous&nbsp;?</h2>

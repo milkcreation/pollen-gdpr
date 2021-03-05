@@ -1,6 +1,6 @@
 <?php
 /**
- * @var Pollen\Gdpr\GdprView $this
+ * @var Pollen\Partial\PartialViewLoaderInterface $this
  */
 ?>
 <?php if ($modal = $this->modal()) : ?>

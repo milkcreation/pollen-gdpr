@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Pollen\Gdpr;
 
-use Exception;
+use Psr\Container\ContainerInterface as Container;
+use RuntimeException;
 
 /**
  * @see \Pollen\Gdpr\GdprProxyInterface
@@ -20,15 +21,21 @@ trait GdprProxy
     /**
      * Instance du gestionnaire de politique de confidentialité.
      *
-     * @return GdprInterface|null
+     * @return GdprInterface
      */
-    public function gdpr(): ?GdprInterface
+    public function gdpr(): GdprInterface
     {
-        if (is_null($this->gdpr)) {
-            try {
-                $this->gdpr = Gdpr::instance();
-            } catch (Exception $e) {
-                $this->gdpr;
+        if ($this->gdpr === null) {
+            $container = method_exists($this, 'getContainer') ? $this->getContainer() : null;
+
+            if ($container instanceof Container && $container->has(GdprInterface::class)) {
+                $this->gdpr = $container->get(GdprInterface::class);
+            } else {
+                try {
+                    $this->gdpr = Gdpr::getInstance();
+                } catch(RuntimeException $e) {
+                    $this->gdpr = new Gdpr();
+                }
             }
         }
 
@@ -40,9 +47,9 @@ trait GdprProxy
      *
      * @param GdprInterface $gdpr
      *
-     * @return GdprProxy|static
+     * @return GdprProxyInterface|static
      */
-    public function setGdpr(GdprInterface $gdpr): GdprProxy
+    public function setGdpr(GdprInterface $gdpr): GdprProxyInterface
     {
         $this->gdpr = $gdpr;
 
