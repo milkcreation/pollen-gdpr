@@ -2,12 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Pollen\Gdpr\Adapters;
+namespace Pollen\Gdpr;
 
-use Pollen\Gdpr\GdprInterface;
-use Pollen\Gdpr\GdprProxy;
-
-abstract class AbstractCookieLawAdapter implements AdapterInterface
+abstract class AbstractGdprAdapter implements GdprAdapterInterface
 {
     use GdprProxy;
 

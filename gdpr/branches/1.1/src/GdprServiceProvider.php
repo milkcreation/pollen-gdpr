@@ -4,41 +4,23 @@ declare(strict_types=1);
 
 namespace Pollen\Gdpr;
 
+use Pollen\Container\BaseServiceProvider;
 use Pollen\Gdpr\Adapters\WordpressAdapter;
+use Pollen\Gdpr\Partial\CookieBannerPartial;
+use Pollen\Gdpr\Partial\PolicyModalPartial;
 use Pollen\Gdpr\Partial\PrivacyLinkPartial;
-use tiFy\Container\ServiceProvider;
-use tiFy\Partial\Contracts\PartialContract;
-use tiFy\Support\Proxy\View;
+use Pollen\Partial\PartialManagerInterface;
 
-class GdprServiceProvider extends ServiceProvider
+class GdprServiceProvider extends BaseServiceProvider
 {
     /**
-     * Liste des noms de qualification des services fournis.
-     * @internal requis. Tous les noms de qualification de services à traiter doivent être renseignés.
      * @var string[]
      */
     protected $provides = [
         GdprInterface::class,
         PrivacyLinkPartial::class,
         WordpressAdapter::class,
-        'gdpr.view-engine',
     ];
-
-    /**
-     * @inheritDoc
-     */
-    public function boot(): void
-    {
-        events()->listen(
-            'wp.booted',
-            function () {
-                /** @var GdprInterface $gdpr */
-                $gdpr = $this->getContainer()->get(GdprInterface::class);
-
-                $gdpr->setAdapter($gdpr->containerGet(WordpressAdapter::class))->boot();
-            }
-        );
-    }
 
     /**
      * @inheritDoc
@@ -48,13 +30,12 @@ class GdprServiceProvider extends ServiceProvider
         $this->getContainer()->share(
             GdprInterface::class,
             function () {
-                return new Gdpr(config('gdpr', []), $this->getContainer());
+                return new Gdpr([], $this->getContainer());
             }
         );
 
         $this->registerAdapters();
         $this->registerPartialDrivers();
-        $this->registerViewEngine();
     }
 
     /**
@@ -80,38 +61,31 @@ class GdprServiceProvider extends ServiceProvider
     public function registerPartialDrivers(): void
     {
         $this->getContainer()->add(
+            CookieBannerPartial::class,
+            function () {
+                return new CookieBannerPartial(
+                    $this->getContainer()->get(GdprInterface::class),
+                    $this->getContainer()->get(PartialManagerInterface::class)
+                );
+            }
+        );
+
+        $this->getContainer()->add(
+            PolicyModalPartial::class,
+            function () {
+                return new PolicyModalPartial(
+                    $this->getContainer()->get(GdprInterface::class),
+                    $this->getContainer()->get(PartialManagerInterface::class)
+                );
+            }
+        );
+
+        $this->getContainer()->add(
             PrivacyLinkPartial::class,
             function () {
                 return new PrivacyLinkPartial(
                     $this->getContainer()->get(GdprInterface::class),
-                    $this->getContainer()->get(PartialContract::class)
-                );
-            }
-        );
-    }
-
-    /**
-     * Déclaration du service de moteur de gabarits d'affichage.
-     *
-     * @return void
-     */
-    public function registerViewEngine(): void
-    {
-        $this->getContainer()->share(
-            'gdpr.view-engine',
-            function () {
-                /** @var GdprInterface $gdpr */
-                $gdpr = $this->getContainer()->get(GdprInterface::class);
-
-                return View::getPlatesEngine(
-                    array_merge(
-                        [
-                            'directory'  => $gdpr->resources('views'),
-                            'factory'    => GdprView::class,
-                            'gdpr' => $gdpr,
-                        ],
-                        $gdpr->config('viewer', [])
-                    )
+                    $this->getContainer()->get(PartialManagerInterface::class)
                 );
             }
         );

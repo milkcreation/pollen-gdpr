@@ -2,12 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Pollen\Gdpr\Adapters;
+namespace Pollen\Gdpr;
 
-use Pollen\Gdpr\GdprInterface;
-use Pollen\Gdpr\GdprProxyInterface;
-
-interface AdapterInterface extends GdprProxyInterface
+interface GdprAdapterInterface extends GdprProxyInterface
 {
     /**
      * Traitement des attributs de configuration de rendu.

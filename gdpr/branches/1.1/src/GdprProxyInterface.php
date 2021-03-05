@@ -9,16 +9,16 @@ Interface GdprProxyInterface
     /**
      * Instance du gestionnaire de politique de confidentialité.
      *
-     * @return GdprInterface|null
+     * @return GdprInterface
      */
-    public function gdpr(): ?GdprInterface;
+    public function gdpr(): GdprInterface;
 
     /**
      * Définition du gestionnaire de politique de confidentialité.
      *
      * @param GdprInterface $gdpr
      *
-     * @return GdprProxy|static
+     * @return GdprProxyInterface|static
      */
-    public function setGdpr(GdprInterface $gdpr): GdprProxy;
+    public function setGdpr(GdprInterface $gdpr): GdprProxyInterface;
 }

@@ -1,11 +1,11 @@
 <?php
 /**
- * @var Pollen\Gdpr\GdprView $this
+ * @var Pollen\Partial\PartialViewLoaderInterface $this
  */
-echo partial('tag', [
+echo $this->partial('tag', [
     'tag'     => 'a',
     'attrs'   => [
-        'class'       => 'CookieLaw-button CookieLaw-button--accept',
+        'class'       => 'CookieBanner-button CookieBanner-accept',
         'href'        => "#{$this->get('attrs.id')}",
         'data-toggle' => 'notice.trigger'
     ],

@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace Pollen\Gdpr\Adapters;
 
-use Pollen\Gdpr\GdprInterface;
-use tiFy\Wordpress\Proxy\PageHook;
+use Pollen\Gdpr\AbstractGdprAdapter;
 
-class WordpressAdapter extends AbstractCookieLawAdapter
+class WordpressAdapter extends AbstractGdprAdapter
 {
     /**
      * @inheritDoc
      */
-    public function parseConfig(): GdprInterface
+    public function parseConfig(): void
     {
         $conf = $this->gdpr()->config();
 
@@ -56,7 +55,5 @@ class WordpressAdapter extends AbstractCookieLawAdapter
                 echo $this->gdpr()->render();
             }, 999999);
         }
-
-        return $this->gdpr();
     }
 }
