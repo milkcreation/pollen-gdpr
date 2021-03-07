@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Pollen\Gdpr;
 
+use Pollen\Gdpr\Adapters\WpGdprAdapter;
 use Pollen\Support\Filesystem;
 use RuntimeException;
 use Pollen\Gdpr\Partial\CookieBannerPartial;
@@ -114,6 +115,10 @@ class Gdpr implements GdprInterface
 
             $this->parseConfig();
 
+            if ($this->adapter === null && defined('WPINC')) {
+                $this->setAdapter(new WpGdprAdapter($this));
+            }
+
             $this->setBooted();
             //events()->trigger('cookie-law.booted', [$this]);
         }
@@ -180,10 +185,6 @@ class Gdpr implements GdprInterface
             if (!$this->config()->has('modal.viewer.override_dir')) {
                 $this->config(['modal.viewer.override_dir' => $this->resources('views/partial/modal')]);
             }
-        }
-
-        if ($adapter = $this->getAdapter()) {
-            $adapter->parseConfig();
         }
     }
 

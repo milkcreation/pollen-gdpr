@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Pollen\Gdpr;
 
 use Pollen\Container\BaseServiceProvider;
-use Pollen\Gdpr\Adapters\WordpressAdapter;
+use Pollen\Gdpr\Adapters\WpGdprAdapter;
 use Pollen\Gdpr\Partial\CookieBannerPartial;
 use Pollen\Gdpr\Partial\PolicyModalPartial;
 use Pollen\Gdpr\Partial\PrivacyLinkPartial;
@@ -19,7 +19,7 @@ class GdprServiceProvider extends BaseServiceProvider
     protected $provides = [
         GdprInterface::class,
         PrivacyLinkPartial::class,
-        WordpressAdapter::class,
+        WpGdprAdapter::class,
     ];
 
     /**
@@ -46,9 +46,9 @@ class GdprServiceProvider extends BaseServiceProvider
     public function registerAdapters(): void
     {
         $this->getContainer()->share(
-            WordpressAdapter::class,
+            WpGdprAdapter::class,
             function () {
-                return new WordpressAdapter($this->getContainer()->get(GdprInterface::class));
+                return new WpGdprAdapter($this->getContainer()->get(GdprInterface::class));
             }
         );
     }

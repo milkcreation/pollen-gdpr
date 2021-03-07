@@ -6,8 +6,28 @@ namespace Pollen\Gdpr\Adapters;
 
 use Pollen\Gdpr\AbstractGdprAdapter;
 
-class WordpressAdapter extends AbstractGdprAdapter
+class WpGdprAdapter extends AbstractGdprAdapter
 {
+    /**
+     * @inheritDoc
+     */
+    public function boot(): void
+    {
+        if (!$this->isBooted()) {
+            $this->parseConfig();
+
+            /** @todo * /
+            if ($this->gdpr()->config('in_footer', true) === true) {
+                add_action('wp_footer', function () {
+                    //echo $this->gdpr()->render();
+                });
+            }
+            /**/
+
+            $this->setBooted();
+        }
+    }
+
     /**
      * @inheritDoc
      */
@@ -15,6 +35,7 @@ class WordpressAdapter extends AbstractGdprAdapter
     {
         $conf = $this->gdpr()->config();
 
+        /** @todo * /
         if (!$conf->has('page-hook')) {
             $conf->set('page-hook', true);
         }
@@ -49,11 +70,6 @@ class WordpressAdapter extends AbstractGdprAdapter
                 ]);
             }
         }
-
-        if ($conf->get('in_footer')) {
-            add_action('wp_footer', function () {
-                echo $this->gdpr()->render();
-            }, 999999);
-        }
+        /**/
     }
 }
