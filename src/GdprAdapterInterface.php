@@ -4,12 +4,21 @@ declare(strict_types=1);
 
 namespace Pollen\Gdpr;
 
-interface GdprAdapterInterface extends GdprProxyInterface
+use Pollen\Support\Concerns\BootableTraitInterface;
+
+interface GdprAdapterInterface extends BootableTraitInterface, GdprProxyInterface
 {
+    /**
+     * Chargement.
+     *
+     * @return void
+     */
+    public function boot(): void;
+
     /**
      * Traitement des attributs de configuration de rendu.
      *
-     * @return GdprInterface
+     * @return void
      */
-    public function parseConfig(): GdprInterface;
+    public function parseConfig(): void;
 }
