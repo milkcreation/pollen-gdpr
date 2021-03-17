@@ -8,5 +8,5 @@ echo $this->partial('tag', [
         'class'       => 'CookieBanner-close CookieBanner-noticeClose',
         'aria-label'  => __('Fermeture de la fenêtre', 'tify'),
     ],
-    'content' => '',
+    'content' => '&#x2715;',
 ]);
