@@ -1,63 +1,62 @@
 'use strict'
 
-const getFetchArgsFromURI = (URI) => {
-  let request = {}
-
-  try {
-    const decodedURI = decodeURIComponent(URI)
-    request = JSON.parse(decodedURI)
-  } catch (e) {
-    throw e
-  }
-
-  const endpoint = request.endpoint
-  delete request.endpoint
-
-  if (request.body) {
-    try {
-      request.body = JSON.stringify(request.body)
-    } catch (e) {
-      throw e
-    }
-  }
-
-  return [endpoint, request];
-}
-
-const getDeferedCookieBanner = async (endpoint, request) => {
-  try {
-    let response = await fetch(endpoint, request)
-
-    if (response.ok) {
-      return await response.text()
-    } else {
-      console.log(response.status)
-    }
-  } catch (e) {
-    console.log(e)
-  }
-
-  return ''
-}
-
-const acceptCookies = async (endpoint, request) => {
-  try {
-    let response = await fetch(endpoint, request)
-
-    if (response.ok) {
-      return await response.json()
-    } else {
-      console.log(response.status)
-    }
-  } catch (e) {
-    console.log(e)
-  }
-
-  return {success: false}
-}
-
 window.addEventListener('load', () => {
-  const $deferContainer = document.querySelector('.CookieBanner-defer')
+  const $deferContainer = document.querySelector('.CookieBanner-defer'),
+      getFetchArgsFromURI = (URI) => {
+        let request = {}
+
+        try {
+          const decodedURI = decodeURIComponent(URI)
+          request = JSON.parse(decodedURI)
+        } catch (e) {
+          throw e
+        }
+
+        const endpoint = request.endpoint
+        delete request.endpoint
+
+        if (request.body) {
+          try {
+            request.body = JSON.stringify(request.body)
+          } catch (e) {
+            throw e
+          }
+        }
+
+        return [endpoint, request];
+      },
+
+      getDeferedCookieBanner = async (endpoint, request) => {
+        try {
+          let response = await fetch(endpoint, request)
+
+          if (response.ok) {
+            return await response.text()
+          } else {
+            console.log(response.status)
+          }
+        } catch (e) {
+          console.log(e)
+        }
+
+        return ''
+      },
+
+      acceptCookies = async (endpoint, request) => {
+        try {
+          let response = await fetch(endpoint, request)
+
+          if (response.ok) {
+            return await response.json()
+          } else {
+            console.log(response.status)
+          }
+        } catch (e) {
+          console.log(e)
+        }
+
+        return {success: false}
+      }
 
   if ($deferContainer === null) {
     return
