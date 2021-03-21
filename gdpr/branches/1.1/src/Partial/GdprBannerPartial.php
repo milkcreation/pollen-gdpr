@@ -10,10 +10,12 @@ use Pollen\Http\Response;
 use Pollen\Http\ResponseInterface;
 use Pollen\Support\HtmlAttrs;
 use Pollen\Support\Proxy\CookieProxy;
+use Pollen\Support\Proxy\RouterProxy;
 
-class CookieBannerPartial extends AbstractGdprPartialDriver
+class GdprBannerPartial extends AbstractGdprPartialDriver
 {
     use CookieProxy;
+    use RouterProxy;
 
     /**
      * @inheritDoc
@@ -23,11 +25,13 @@ class CookieBannerPartial extends AbstractGdprPartialDriver
         return array_merge(
             parent::defaultParams(),
             [
-                'cookie' => [
-                    'name'     => 'cookie-banner',
+                'cookie'     => [
+                    'name'     => 'gdpr',
                     'lifetime' => 3600 * 24 * 3,
                     'value'    => 1,
                 ],
+                'backdrop'   => false,
+                'policy-url' => $this->gdpr()->policy()->getUrl(),
             ]
         );
     }
@@ -39,14 +43,14 @@ class CookieBannerPartial extends AbstractGdprPartialDriver
      */
     public function defer(): string
     {
-        $cookie = $this->cookie('cookie-banner', $this->get('cookie', []));
+        $cookie = $this->cookie('gdpr', $this->get('cookie', []));
 
         if ($cookie->checkRequestValue()) {
             return '';
         }
 
         $attrs = [
-            'class'        => 'CookieBanner-defer',
+            'class'        => 'GdprBanner-defer',
             'data-request' => [
                 'endpoint' => $this->getXhrUrl([], 'xhrDeferResponse'),
                 'method'   => 'POST',
@@ -89,7 +93,7 @@ class CookieBannerPartial extends AbstractGdprPartialDriver
      */
     public function viewDirectory(): string
     {
-        return $this->gdpr()->resources('/views/partial/cookie-banner');
+        return $this->gdpr()->resources('/views/partial/gdpr-banner');
     }
 
     /**
@@ -103,7 +107,7 @@ class CookieBannerPartial extends AbstractGdprPartialDriver
     {
         $data = $this->httpRequest()->toArray();
         $cookie = $this->cookie(
-            'cookie-banner',
+            'gdpr',
             array_merge(
                 $data['cookie'] ?? [],
                 ['value' => 1]
@@ -112,7 +116,7 @@ class CookieBannerPartial extends AbstractGdprPartialDriver
 
         return new JsonResponse(
             [
-                'success' => true
+                'success' => true,
             ],
             200,
             [

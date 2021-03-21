@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Pollen\Gdpr;
 
 use Pollen\Gdpr\Adapters\WpGdprAdapter;
+use Pollen\Http\ResponseInterface;
 use Pollen\Support\Filesystem;
+use Pollen\Support\Proxy\RouterProxy;
 use RuntimeException;
-use Pollen\Gdpr\Partial\CookieBannerPartial;
-use Pollen\Gdpr\Partial\PolicyModalPartial;
-use Pollen\Gdpr\Partial\PrivacyLinkPartial;
+use Pollen\Gdpr\Partial\GdprBannerPartial;
+use Pollen\Gdpr\Partial\GdprPolicyPartial;
+use Pollen\Routing\RouteInterface;
 use Pollen\Support\Concerns\BootableTrait;
 use Pollen\Support\Concerns\ConfigBagAwareTrait;
 use Pollen\Support\Proxy\ContainerProxy;
@@ -22,6 +24,7 @@ class Gdpr implements GdprInterface
     use ConfigBagAwareTrait;
     use ContainerProxy;
     use PartialProxy;
+    use RouterProxy;
 
     /**
      * Instance principale.
@@ -40,6 +43,18 @@ class Gdpr implements GdprInterface
      * @var array
      */
     private $defaultProviders = [];
+
+    /**
+     * Instance du gestionnaire de politique de confidentialité.
+     * @var GdprPolicyInterface
+     */
+    private $policy;
+
+    /**
+     * Instance de la route XHR d'affichage de la politique de confidentialité.
+     * @var RouteInterface
+     */
+    protected $policyXhrRoute;
 
     /**
      * Chemin vers le répertoire des ressources.
@@ -93,34 +108,34 @@ class Gdpr implements GdprInterface
     public function boot(): GdprInterface
     {
         if (!$this->isBooted()) {
-            //events()->trigger('cookie-law.booting', [$this]);
+            //events()->trigger('gdpr.booting', [$this]);
 
             $this->partial()->register(
-                'cookie-banner',
-                $this->containerHas(CookieBannerPartial::class)
-                    ? CookieBannerPartial::class : new CookieBannerPartial($this, $this->partial())
+                'gdpr-banner',
+                $this->containerHas(GdprBannerPartial::class)
+                    ? GdprBannerPartial::class : new GdprBannerPartial($this, $this->partial())
             );
 
             $this->partial()->register(
-                'policy-modal',
-                $this->containerHas(PolicyModalPartial::class)
-                    ? PolicyModalPartial::class : new PolicyModalPartial($this, $this->partial())
+                'gdpr-policy',
+                $this->containerHas(GdprPolicyPartial::class)
+                    ? GdprPolicyPartial::class : new GdprPolicyPartial($this, $this->partial())
             );
 
-            $this->partial()->register(
-                'privacy-link',
-                $this->containerHas(PrivacyLinkPartial::class)
-                    ? PrivacyLinkPartial::class : new PrivacyLinkPartial($this, $this->partial())
-            );
-
-            $this->parseConfig();
+            if ($router = $this->router()) {
+                $this->policyXhrRoute = $router->xhr(
+                    '/api/' . md5('gdpr') . '/policy',
+                    [$this, 'policyXhrResponse'],
+                    'GET'
+                );
+            }
 
             if ($this->adapter === null && defined('WPINC')) {
                 $this->setAdapter(new WpGdprAdapter($this));
             }
 
             $this->setBooted();
-            //events()->trigger('cookie-law.booted', [$this]);
+            //events()->trigger('gdpr.booted', [$this]);
         }
 
         return $this;
@@ -137,55 +152,24 @@ class Gdpr implements GdprInterface
     /**
      * @inheritDoc
      */
-    public function parseConfig(): void
+    public function policy(): GdprPolicyInterface
     {
-        /*$this->config(
-            [
-                'id'             => 'CookieLaw',
-                'privacy_policy' => [
-                    'content' => $this->view('partial/cookie-notice/default-txt'),
-                    'title'   => $this->view('partial/cookie-notice/default-title'),
-                ],
-            ]
-        );*/
+        if ($this->policy === null) {
+            $policy = $this->containerHas(GdprPolicyInterface::class) ?
+                $this->containerGet(GdprPolicyInterface::class) : new GdprPolicy($this);
 
-        $modal = $this->config('modal', true);
-        if ($this->config('modal') !== false) {
-            if (!is_array($modal)) {
-                $this->config(
-                    [
-                        'modal' => [
-                            'ajax'      => [
-                                'url' => $this->xhrModalUrl,
-                            ],
-                            'attrs'     => [
-                                'id' => 'Modal-cookieLaw-privacyPolicy',
-                            ],
-                            'options'   => ['show' => false, 'backdrop' => true],
-                            'size'      => 'xl',
-                            'in_footer' => false,
-                        ],
-                    ]
-                );
-            }
-
-            /*foreach (['header', 'body', 'footer'] as $part) {
-                if (!$this->config()->has("modal.content.{$part}")) {
-                    $this->config(
-                        [
-                            "modal.content.{$part}" => $this->view(
-                                "partial/modal/content-{$part}",
-                                $this->config()->all()
-                            ),
-                        ]
-                    );
-                }
-            }*/
-
-            if (!$this->config()->has('modal.viewer.override_dir')) {
-                $this->config(['modal.viewer.override_dir' => $this->resources('views/partial/modal')]);
-            }
+            $this->setPolicy($policy);
         }
+
+        return $this->policy;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function policyXhrResponse(): ResponseInterface
+    {
+        return $this->policy()->xhrResponse();
     }
 
     /**
@@ -214,6 +198,22 @@ class Gdpr implements GdprInterface
     public function setAdapter(GdprAdapterInterface $adapter): GdprInterface
     {
         $this->adapter = $adapter;
+
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setPolicy(GdprPolicyInterface $policy): GdprInterface
+    {
+        $this->policy = $policy;
+
+        if ($this->policyXhrRoute instanceof RouteInterface) {
+            $this->policy->setUrl($this->router()->getRouteUrl($this->policyXhrRoute));
+        }
+
+        $this->policy->setParams($this->config('policy', []));
 
         return $this;
     }

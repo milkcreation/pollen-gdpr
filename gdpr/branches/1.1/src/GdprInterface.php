@@ -4,16 +4,19 @@ declare(strict_types=1);
 
 namespace Pollen\Gdpr;
 
+use Pollen\Http\ResponseInterface;
 use Pollen\Support\Concerns\BootableTraitInterface;
 use Pollen\Support\Concerns\ConfigBagAwareTraitInterface;
 use Pollen\Support\Proxy\ContainerProxyInterface;
 use Pollen\Support\Proxy\PartialProxyInterface;
+use Pollen\Support\Proxy\RouterProxyInterface;
 
 interface GdprInterface extends
     BootableTraitInterface,
     ConfigBagAwareTraitInterface,
     ContainerProxyInterface,
-    PartialProxyInterface
+    PartialProxyInterface,
+    RouterProxyInterface
 {
     /**
      * Chargement.
@@ -28,6 +31,20 @@ interface GdprInterface extends
      * @return GdprAdapterInterface|null
      */
     public function getAdapter(): ?GdprAdapterInterface;
+
+    /**
+     * Récupération de l'instance du gestionnaire de politique de confidentialité.
+     *
+     * @return GdprPolicyInterface
+     */
+    public function policy(): GdprPolicyInterface;
+
+    /**
+     * Réponse de la requête HTTP XHR.
+     *
+     * @return ResponseInterface
+     */
+    public function policyXhrResponse(): ResponseInterface;
 
     /**
      * Chemin absolu vers une ressource (fichier|répertoire).
@@ -46,6 +63,15 @@ interface GdprInterface extends
      * @return static
      */
     public function setAdapter(GdprAdapterInterface $adapter): GdprInterface;
+
+    /**
+     * Définition du gestionnaire de politique de confidentialité.
+     *
+     * @param GdprPolicyInterface $policy
+     *
+     * @return static
+     */
+    public function setPolicy(GdprPolicyInterface $policy): GdprInterface;
 
     /**
      * Définition du chemin absolu vers le répertoire des ressources.

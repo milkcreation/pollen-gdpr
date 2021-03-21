@@ -1,12 +1,12 @@
 // Variables
-@import "./cookie-banner/variables";
+@import "./gdpr-banner/variables";
 
 // Dépendances
-@import "./cookie-banner/theme-dark";
-@import "./cookie-banner/theme-light";
+@import "./gdpr-banner/theme-dark";
+@import "./gdpr-banner/theme-light";
 
 // Personnalisation
-.CookieBanner {
+.GdprBanner {
   position: fixed;
   left: 0;
   bottom: 0;
@@ -14,8 +14,8 @@
   z-index: 1100;
   padding: 10px 30px 10px 10px;
   text-align: center;
-  background-color: $cookie-banner-background-color;
-  color: $cookie-banner-color;
+  background-color: $gdpr-banner-background-color;
+  color: $gdpr-banner-color;
   transform: translateY(100%);
   transition: transform .5s ease-in-out;
 
@@ -24,15 +24,15 @@
   }
 }
 
-.CookieBanner-noticeText {
+.GdprBanner-noticeText {
   margin-bottom: 10px;
 }
 
-.CookieBanner-noticeButtons {
+.GdprBanner-noticeButtons {
   margin: 0 -5px;
 }
 
-.CookieBanner-button {
+.GdprBanner-button {
   display: inline-block;
   margin: 0 2px 5px;
   padding: 0.6em 1.2em;
@@ -42,19 +42,19 @@
 
   &,
   &:visited {
-    color: $cookie-banner-color;
-    border: solid 1px $cookie-banner-color;
+    color: $gdpr-banner-color;
+    border: solid 1px $gdpr-banner-color;
   }
 
   &:hover,
   &:active,
   &:focus {
-    color: $cookie-banner-hover-color;
-    border-color: $cookie-banner-hover-color;
+    color: $gdpr-banner-hover-color;
+    border-color: $gdpr-banner-hover-color;
   }
 }
 
-.CookieBanner-close {
+.GdprBanner-close {
   display: block;
   border:none;
   background-color: transparent;
@@ -64,7 +64,7 @@
   cursor: pointer;
 }
 
-.CookieBanner-noticeClose {
+.GdprBanner-noticeClose {
   position: absolute;
   top: 5px;
   right: 5px;
@@ -73,16 +73,16 @@
   &,
   &:active,
   &:visited {
-    color: $cookie-banner-color;
+    color: $gdpr-banner-color;
   }
 
   &:hover,
   &:focus {
-    color: $cookie-banner-hover-color;
+    color: $gdpr-banner-hover-color;
   }
 }
 
-.CookieBanner-backdrop {
+.GdprBanner-backdrop {
   position: fixed;
   top: 0;
   right: 0;
@@ -90,19 +90,7 @@
   left: 0;
   height: 100%;
   z-index: 1099;
-  opacity: $cookie-banner-backdrop-opacity;
-  background-color: $cookie-banner-backdrop-background-color;
+  opacity: $gdpr-banner-backdrop-opacity;
+  background-color: $gdpr-banner-backdrop-background-color;
   transition: all 0.5s;
-}
-
-body.modal-open {
-  .CookieBanner-notice {
-    opacity: 0;
-    max-height: 100%;
-  }
-
-  .CookieBanner-backdrop {
-    opacity: 0;
-    max-height: 100%;
-  }
 }

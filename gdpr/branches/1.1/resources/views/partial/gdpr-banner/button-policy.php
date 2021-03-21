@@ -5,9 +5,9 @@
 echo $this->partial('tag', [
     'tag'     => 'a',
     'attrs'   => [
-        'class'  => 'CookieBanner-button CookieBanner-read',
-        'href'   => $this->get('privacy_policy.permalink'),
+        'class'  => 'GdprBanner-button GdprBanner-policy',
+        'href'   => $this->get('policy-url'),
         'target' => '_blank'
     ],
-    'content' => __('En savoir plus', 'tify')
+    'content' => __('En savoir plus', 'pollen-gdpr')
 ]);
