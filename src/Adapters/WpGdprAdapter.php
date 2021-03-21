@@ -14,7 +14,7 @@ class WpGdprAdapter extends AbstractGdprAdapter
     public function boot(): void
     {
         if (!$this->isBooted()) {
-            $this->parseConfig();
+            $this->gdpr()->setPolicy(new WpGdprPolicy($this->gdpr()));
 
             /** @todo * /
             if ($this->gdpr()->config('in_footer', true) === true) {
@@ -51,14 +51,14 @@ class WpGdprAdapter extends AbstractGdprAdapter
                 'desc'                => '',
                 'display_post_states' => false,
                 'edit_form_notice'    => __(
-                    'Vous éditez actuellement la page d\'affichage de politique de confidentialité.', 'tify'
+                    'Vous éditez actuellement la page d\'affichage de politique de confidentialité.', 'pollen-gdpr'
                 ),
                 'listorder'           => 'menu_order, title',
                 'object_type'         => 'post',
                 'object_name'         => 'page',
                 'option_name'         => 'wp_page_for_privacy_policy',
                 'show_option_none'    => '',
-                'title'               => __('Page d\'affichage de politique de confidentialité', 'tify'),
+                'title'               => __('Page d\'affichage de politique de confidentialité', 'pollen-gdpr'),
             ];
             PageHook::set('cookie-law', is_array($page_hook) ? array_merge($defaults, $page_hook) : $defaults);
 

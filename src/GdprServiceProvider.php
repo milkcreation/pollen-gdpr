@@ -6,9 +6,8 @@ namespace Pollen\Gdpr;
 
 use Pollen\Container\BaseServiceProvider;
 use Pollen\Gdpr\Adapters\WpGdprAdapter;
-use Pollen\Gdpr\Partial\CookieBannerPartial;
-use Pollen\Gdpr\Partial\PolicyModalPartial;
-use Pollen\Gdpr\Partial\PrivacyLinkPartial;
+use Pollen\Gdpr\Partial\GdprBannerPartial;
+use Pollen\Gdpr\Partial\GdprPolicyPartial;
 use Pollen\Partial\PartialManagerInterface;
 
 class GdprServiceProvider extends BaseServiceProvider
@@ -18,7 +17,9 @@ class GdprServiceProvider extends BaseServiceProvider
      */
     protected $provides = [
         GdprInterface::class,
-        PrivacyLinkPartial::class,
+        GdprPolicyInterface::class,
+        GdprBannerPartial::class,
+        GdprPolicyPartial::class,
         WpGdprAdapter::class,
     ];
 
@@ -31,6 +32,15 @@ class GdprServiceProvider extends BaseServiceProvider
             GdprInterface::class,
             function () {
                 return new Gdpr([], $this->getContainer());
+            }
+        );
+
+        $this->getContainer()->share(
+            GdprPolicyInterface::class,
+            function () {
+                return new GdprPolicy(
+                    $this->getContainer()->get(GdprInterface::class)
+                );
             }
         );
 
@@ -61,9 +71,9 @@ class GdprServiceProvider extends BaseServiceProvider
     public function registerPartialDrivers(): void
     {
         $this->getContainer()->add(
-            CookieBannerPartial::class,
+            GdprBannerPartial::class,
             function () {
-                return new CookieBannerPartial(
+                return new GdprBannerPartial(
                     $this->getContainer()->get(GdprInterface::class),
                     $this->getContainer()->get(PartialManagerInterface::class)
                 );
@@ -71,19 +81,9 @@ class GdprServiceProvider extends BaseServiceProvider
         );
 
         $this->getContainer()->add(
-            PolicyModalPartial::class,
+            GdprPolicyPartial::class,
             function () {
-                return new PolicyModalPartial(
-                    $this->getContainer()->get(GdprInterface::class),
-                    $this->getContainer()->get(PartialManagerInterface::class)
-                );
-            }
-        );
-
-        $this->getContainer()->add(
-            PrivacyLinkPartial::class,
-            function () {
-                return new PrivacyLinkPartial(
+                return new GdprPolicyPartial(
                     $this->getContainer()->get(GdprInterface::class),
                     $this->getContainer()->get(PartialManagerInterface::class)
                 );

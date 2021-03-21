@@ -47,7 +47,7 @@ trait GdprProxy
      *
      * @param GdprInterface $gdpr
      *
-     * @return static
+     * @return GdprProxy|GdprProxyInterface|static
      */
     public function setGdpr(GdprInterface $gdpr): self
     {

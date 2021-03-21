@@ -18,7 +18,7 @@ Interface GdprProxyInterface
      *
      * @param GdprInterface $gdpr
      *
-     * @return GdprProxy|static
+     * @return GdprProxy|GdprProxyInterface|static
      */
     public function setGdpr(GdprInterface $gdpr): self;
 }
