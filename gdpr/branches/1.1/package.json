@@ -7,7 +7,9 @@
   },
   "author": "Jordy Manner",
   "license": "ISC",
-  "dependencies": {
+  "devDependencies": {
     "tingle.js": "^0.16.0"
+  },
+  "dependencies": {
   }
 }
