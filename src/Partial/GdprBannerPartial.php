@@ -8,7 +8,7 @@ use Pollen\Http\JsonResponse;
 use Pollen\Http\JsonResponseInterface;
 use Pollen\Http\Response;
 use Pollen\Http\ResponseInterface;
-use Pollen\Support\HtmlAttrs;
+use Pollen\Support\Html;
 use Pollen\Support\Proxy\CookieProxy;
 use Pollen\Support\Proxy\RouterProxy;
 
@@ -62,9 +62,7 @@ class GdprBannerPartial extends AbstractGdprPartialDriver
             ],
         ];
 
-        $htmlAttrs = new HtmlAttrs($attrs);
-
-        return "<div {$htmlAttrs}></div>";
+        return "<div " . Html::attr($attrs) . "></div>";
     }
 
     /**
