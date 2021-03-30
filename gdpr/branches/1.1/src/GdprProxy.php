@@ -47,12 +47,10 @@ trait GdprProxy
      *
      * @param GdprInterface $gdpr
      *
-     * @return GdprProxy|GdprProxyInterface|static
+     * @return void
      */
-    public function setGdpr(GdprInterface $gdpr): self
+    public function setGdpr(GdprInterface $gdpr): void
     {
         $this->gdpr = $gdpr;
-
-        return $this;
     }
 }
