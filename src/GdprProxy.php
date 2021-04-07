@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Pollen\Gdpr;
 
-use Psr\Container\ContainerInterface as Container;
+use Pollen\Support\StaticProxy;
 use RuntimeException;
 
 /**
@@ -26,16 +26,14 @@ trait GdprProxy
     public function gdpr(): GdprInterface
     {
         if ($this->gdpr === null) {
-            $container = method_exists($this, 'getContainer') ? $this->getContainer() : null;
-
-            if ($container instanceof Container && $container->has(GdprInterface::class)) {
-                $this->gdpr = $container->get(GdprInterface::class);
-            } else {
-                try {
-                    $this->gdpr = Gdpr::getInstance();
-                } catch(RuntimeException $e) {
-                    $this->gdpr = new Gdpr();
-                }
+            try {
+                $this->gdpr = Gdpr::getInstance();
+            } catch (RuntimeException $e) {
+                $this->gdpr = StaticProxy::getProxyInstance(
+                    GdprInterface::class,
+                    Gdpr::class,
+                    method_exists($this, 'getContainer') ? $this->getContainer() : null
+                );
             }
         }
 

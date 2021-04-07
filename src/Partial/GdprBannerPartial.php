@@ -43,7 +43,7 @@ class GdprBannerPartial extends AbstractGdprPartialDriver
      */
     public function defer(): string
     {
-        $cookie = $this->cookie('gdpr', $this->get('cookie', []));
+        $cookie = $this->cookie()->make('gdpr', $this->get('cookie', []));
 
         if ($cookie->checkRequestValue()) {
             return '';
@@ -104,7 +104,7 @@ class GdprBannerPartial extends AbstractGdprPartialDriver
     public function xhrAcceptResponse(...$args): JsonResponseInterface
     {
         $data = $this->httpRequest()->toArray();
-        $cookie = $this->cookie(
+        $cookie = $this->cookie()->make(
             'gdpr',
             array_merge(
                 $data['cookie'] ?? [],

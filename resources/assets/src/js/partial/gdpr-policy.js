@@ -10,11 +10,13 @@ const gdprPolicyLink = $link => {
 }
 
 window.addEventListener('load', () => {
-  const gdprPolicyLinks = document.querySelectorAll('[data-gdpr="policy"]')
+  const $gdprPolicyLinks = document.querySelectorAll('[data-gdpr="policy"]')
 
-  Array.from(gdprPolicyLinks).forEach(($link) => {
-    gdprPolicyLink($link)
-  })
+  if ($gdprPolicyLinks) {
+    $gdprPolicyLinks.forEach($link => {
+      gdprPolicyLink($link)
+    })
+  }
 })
 
 export default gdprPolicyLink
