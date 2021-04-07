@@ -25,7 +25,7 @@ const
           'Content-type': 'text/html; charset=UTF-8',
           'X-Requested-with': 'XMLHttpRequest'
         }
-      });
+      })
 
       try {
         let response = await fetch(endpoint, request) || undefined
@@ -48,12 +48,12 @@ const
     gdprPolicyModalOpen = endpoint => {
       if (gdprPolicyModal === undefined) {
           gdprPolicyFetchContent(endpoint).then(content => {
-            gdprPolicyModal = gdprPolicyModalCreate(content);
-            gdprPolicyModal.open();
+            gdprPolicyModal = gdprPolicyModalCreate(content)
+            gdprPolicyModal.open()
           })
       } else {
-        gdprPolicyModal.open();
+        gdprPolicyModal.open()
       }
     }
 
-export {gdprPolicyModalOpen};
+export {gdprPolicyModalOpen}
