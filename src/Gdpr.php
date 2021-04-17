@@ -14,6 +14,7 @@ use Pollen\Gdpr\Partial\GdprPolicyPartial;
 use Pollen\Routing\RouteInterface;
 use Pollen\Support\Concerns\BootableTrait;
 use Pollen\Support\Concerns\ConfigBagAwareTrait;
+use Pollen\Support\Exception\ManagerRuntimeException;
 use Pollen\Support\Proxy\ContainerProxy;
 use Pollen\Support\Proxy\PartialProxy;
 use Psr\Container\ContainerInterface as Container;
@@ -99,7 +100,7 @@ class Gdpr implements GdprInterface
         if (self::$instance instanceof self) {
             return self::$instance;
         }
-        throw new RuntimeException(sprintf('Unavailable [%s] instance', __CLASS__));
+        throw new ManagerRuntimeException(sprintf('Unavailable [%s] instance', __CLASS__));
     }
 
     /**
