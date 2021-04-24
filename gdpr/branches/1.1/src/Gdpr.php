@@ -6,9 +6,8 @@ namespace Pollen\Gdpr;
 
 use Pollen\Gdpr\Adapters\WpGdprAdapter;
 use Pollen\Http\ResponseInterface;
-use Pollen\Support\Filesystem;
+use Pollen\Support\Concerns\ResourcesAwareTrait;
 use Pollen\Support\Proxy\RouterProxy;
-use RuntimeException;
 use Pollen\Gdpr\Partial\GdprBannerPartial;
 use Pollen\Gdpr\Partial\GdprPolicyPartial;
 use Pollen\Routing\RouteInterface;
@@ -23,6 +22,7 @@ class Gdpr implements GdprInterface
 {
     use BootableTrait;
     use ConfigBagAwareTrait;
+    use ResourcesAwareTrait;
     use ContainerProxy;
     use PartialProxy;
     use RouterProxy;
@@ -58,12 +58,6 @@ class Gdpr implements GdprInterface
     protected $policyXhrRoute;
 
     /**
-     * Chemin vers le répertoire des ressources.
-     * @var string|null
-     */
-    protected $resourcesBaseDir;
-
-    /**
      * Url de requête HTTP XHR.
      * @var string
      */
@@ -80,6 +74,8 @@ class Gdpr implements GdprInterface
         if ($container !== null) {
             $this->setContainer($container);
         }
+
+        $this->setResourcesBaseDir(dirname(__DIR__) . '/resources');
 
         if ($this->config('boot_enabled', true)) {
             $this->boot();
@@ -176,26 +172,6 @@ class Gdpr implements GdprInterface
     /**
      * @inheritDoc
      */
-    public function resources(?string $path = null): string
-    {
-        if ($this->resourcesBaseDir === null) {
-            $this->resourcesBaseDir = Filesystem::normalizePath(
-                realpath(
-                    dirname(__DIR__) . '/resources/'
-                )
-            );
-
-            if (!file_exists($this->resourcesBaseDir)) {
-                throw new RuntimeException('Gdpr ressources directory unreachable');
-            }
-        }
-
-        return is_null($path) ? $this->resourcesBaseDir : $this->resourcesBaseDir . Filesystem::normalizePath($path);
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function setAdapter(GdprAdapterInterface $adapter): GdprInterface
     {
         $this->adapter = $adapter;
@@ -215,16 +191,6 @@ class Gdpr implements GdprInterface
         }
 
         $this->policy->setParams($this->config('policy', []));
-
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setResourcesBaseDir(string $resourceBaseDir): GdprInterface
-    {
-        $this->resourcesBaseDir = Filesystem::normalizePath($resourceBaseDir);
 
         return $this;
     }
