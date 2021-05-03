@@ -8,8 +8,9 @@
   "author": "Jordy Manner",
   "license": "ISC",
   "devDependencies": {
-    "tingle.js": "^0.16.0"
   },
   "dependencies": {
+    "@pollen-solutions/partial": "file:../partial/",
+    "@pollen-solutions/support": "file:../support/"
   }
 }
