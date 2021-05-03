@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Pollen\Gdpr;
 
-use Pollen\Support\StaticProxy;
+use Pollen\Support\ProxyResolver;
 use RuntimeException;
 
 /**
@@ -29,7 +29,7 @@ trait GdprProxy
             try {
                 $this->gdpr = Gdpr::getInstance();
             } catch (RuntimeException $e) {
-                $this->gdpr = StaticProxy::getProxyInstance(
+                $this->gdpr = ProxyResolver::getInstance(
                     GdprInterface::class,
                     Gdpr::class,
                     method_exists($this, 'getContainer') ? $this->getContainer() : null
