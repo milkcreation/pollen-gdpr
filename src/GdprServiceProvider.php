@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Pollen\Gdpr;
 
-use Pollen\Container\BaseServiceProvider;
+use Pollen\Container\BootableServiceProvider;
 use Pollen\Gdpr\Adapters\WpGdprAdapter;
 use Pollen\Gdpr\Partial\GdprBannerPartial;
 use Pollen\Gdpr\Partial\GdprPolicyPartial;
 use Pollen\Partial\PartialManagerInterface;
 
-class GdprServiceProvider extends BaseServiceProvider
+class GdprServiceProvider extends BootableServiceProvider
 {
     /**
      * @var string[]
