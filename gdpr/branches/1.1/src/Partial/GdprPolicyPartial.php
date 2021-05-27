@@ -12,7 +12,7 @@ class GdprPolicyPartial extends AbstractGdprPartialDriver
     public function render(): string
     {
         if (!$this->has('content')) {
-            $this->set('content', __('conditions relatives à la politique des données personnelles', 'pollen-gdpr'));
+            $this->set('content', 'conditions relatives à la politique des données personnelles');
         }
 
         if (!$this->has('attrs.data-gdpr')) {
@@ -22,6 +22,8 @@ class GdprPolicyPartial extends AbstractGdprPartialDriver
         if (!$this->has('attrs.href')) {
             $this->set('attrs.href', $this->gdpr()->policy()->getUrl());
         }
+
+        $this->set('attrs.rel', 'nofollow');
 
         return parent::render();
     }

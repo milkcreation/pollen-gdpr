@@ -6,7 +6,7 @@ echo $this->partial('tag', [
     'tag'     => 'button',
     'attrs'   => [
         'class'       => 'GdprBanner-close GdprBanner-noticeClose',
-        'aria-label'  => __('Fermeture de la fenêtre', 'pollen-gdpr'),
+        'aria-label'  => 'Fermeture de la fenêtre',
     ],
     'content' => '&#x2715;',
 ]);

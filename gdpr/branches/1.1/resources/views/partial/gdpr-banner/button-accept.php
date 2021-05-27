@@ -9,5 +9,5 @@ echo $this->partial('tag', [
         'href'        => "#{$this->get('attrs.id')}",
         'data-toggle' => 'notice.trigger'
     ],
-    'content' => __('Accepter', 'pollen-gdpr')
+    'content' => 'Accepter'
 ]);

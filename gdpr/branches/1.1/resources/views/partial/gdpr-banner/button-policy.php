@@ -9,5 +9,5 @@ echo $this->partial('tag', [
         'href'   => $this->get('policy-url'),
         'target' => '_blank'
     ],
-    'content' => __('En savoir plus', 'pollen-gdpr')
+    'content' => 'En savoir plus'
 ]);
