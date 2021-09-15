@@ -1,7 +1,7 @@
 {
   "name": "pollen-solutions/gdpr",
   "description": "Pollen GDPR Component - Tools to manage the privacy policy of applications.",
-  "homepage": "https://www.presstify.com/pollen-solutions/gdpr/",
+  "homepage": "https://github.com/milkcreation/pollen-gdpr.git",
   "keywords": [
     "presstify",
     "plugins",
@@ -10,19 +10,13 @@
     "rgpd",
     "gdpr"
   ],
-  "time": "2021-05-27",
+  "time": "2021-09-15",
   "license": "MIT",
   "authors": [
     {
       "name": "Jordy Manner",
       "email": "jordy@presstify.com",
       "role": "Developper"
-    }
-  ],
-  "repositories": [
-    {
-      "type": "composer",
-      "url": "https://composer.presstify.com/pollen-solutions/"
     }
   ],
   "require": {
